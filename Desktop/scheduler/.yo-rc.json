@@ -2,7 +2,7 @@
   "generator-jhipster": {
     "applicationType": "monolith",
     "baseName": "scheduler",
-    "jhipsterVersion": "7.1.0",
+    "jhipsterVersion": "7.3.1",
     "skipClient": false,
     "skipServer": false,
     "skipUserManagement": true,
@@ -15,8 +15,8 @@
     "blueprints": [],
     "otherModules": [],
     "pages": [],
-    "creationTimestamp": 1635934649904,
-    "serviceDiscoveryType": false,
+    "creationTimestamp": 1635936665139,
+    "serviceDiscoveryType": "no",
     "reactive": true,
     "authenticationType": "oauth2",
     "packageName": "com.mycompany.myapp",
@@ -24,6 +24,8 @@
     "cacheProvider": "no",
     "enableHibernateCache": false,
     "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "prodDatabaseType": "mongodb",
     "buildTool": "maven",
     "serverSideOptions": [],
     "websocket": false,
@@ -36,11 +38,11 @@
     "clientThemeVariant": "primary",
     "enableTranslation": false,
     "nativeLanguage": "fr",
-    "packageFolder": "com/mycompany/myapp",
-    "devDatabaseType": "mongodb",
-    "prodDatabaseType": "mongodb",
+    "monorepository": true,
+    "skipCommitHook": true,
     "devServerPort": 4200,
     "clientPackageManager": "npm",
+    "enableGradleEnterprise": false,
     "languages": ["en", "fr"]
   }
 }

@@ -1,16 +1,12 @@
 package com.mycompany.myapp.web.rest;
 
-import static com.mycompany.myapp.web.rest.AccountResourceIT.TEST_USER_LOGIN;
-import static com.mycompany.myapp.web.rest.TestUtil.ID_TOKEN;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.TEST_USER_LOGIN;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.authenticationToken;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.registerAuthenticationToken;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.mycompany.myapp.IntegrationTest;
-import com.mycompany.myapp.config.TestSecurityConfiguration;
 import com.mycompany.myapp.security.AuthoritiesConstants;
-import com.mycompany.myapp.service.UserService;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -31,26 +28,31 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @IntegrationTest
 class AccountResourceIT {
 
-    static final String TEST_USER_LOGIN = "test";
-
-    private OidcIdToken idToken;
+    private Map<String, Object> claims;
 
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private ReactiveOAuth2AuthorizedClientService authorizedClientService;
+
+    @Autowired
+    private ClientRegistration clientRegistration;
+
     @BeforeEach
     public void setup() {
-        Map<String, Object> claims = new HashMap<>();
+        claims = new HashMap<>();
         claims.put("groups", Collections.singletonList(AuthoritiesConstants.ADMIN));
         claims.put("sub", "jane");
         claims.put("email", "jane.doe@jhipster.com");
-        this.idToken = new OidcIdToken(ID_TOKEN, Instant.now(), Instant.now().plusSeconds(60), claims);
     }
 
     @Test
     void testGetExistingAccount() {
         webTestClient
-            .mutateWith(mockAuthentication(TestUtil.authenticationToken(idToken)))
+            .mutateWith(
+                mockAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, authenticationToken(claims)))
+            )
             .mutateWith(csrf())
             .get()
             .uri("/api/account")

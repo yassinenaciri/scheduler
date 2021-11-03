@@ -82,7 +82,7 @@ public class SecurityConfiguration {
             .and()
                 .referrerPolicy(ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
             .and()
-                .featurePolicy("geolocation 'none'; midi 'none'; sync-xhr 'none'; microphone 'none'; camera 'none'; magnetometer 'none'; gyroscope 'none'; fullscreen 'self'; payment 'none'")
+                .permissionsPolicy().policy("camera=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()")
             .and()
                 .frameOptions().disable()
         .and()
@@ -101,7 +101,7 @@ public class SecurityConfiguration {
             .pathMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN);
 
         http.oauth2Login()
-            .and()
+            .and()            
             .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(jwtAuthenticationConverter());
@@ -129,26 +129,22 @@ public class SecurityConfiguration {
             // Delegate to the default implementation for loading a user
             return delegate
                 .loadUser(userRequest)
-                .map(
-                    user -> {
-                        Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+                .map(user -> {
+                    Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
 
-                        user
-                            .getAuthorities()
-                            .forEach(
-                                authority -> {
-                                    if (authority instanceof OidcUserAuthority) {
-                                        OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
-                                        mappedAuthorities.addAll(
-                                            SecurityUtils.extractAuthorityFromClaims(oidcUserAuthority.getUserInfo().getClaims())
-                                        );
-                                    }
-                                }
-                            );
+                    user
+                        .getAuthorities()
+                        .forEach(authority -> {
+                            if (authority instanceof OidcUserAuthority) {
+                                OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
+                                mappedAuthorities.addAll(
+                                    SecurityUtils.extractAuthorityFromClaims(oidcUserAuthority.getUserInfo().getClaims())
+                                );
+                            }
+                        });
 
-                        return new DefaultOidcUser(mappedAuthorities, user.getIdToken(), user.getUserInfo());
-                    }
-                );
+                    return new DefaultOidcUser(mappedAuthorities, user.getIdToken(), user.getUserInfo());
+                });
         };
     }
 

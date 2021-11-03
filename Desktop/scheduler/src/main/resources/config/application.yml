@@ -149,8 +149,8 @@ jhipster:
   api-docs:
     default-include-pattern: ${server.servlet.context-path:}/api/.*
     management-include-pattern: ${server.servlet.context-path:}/management/.*
-    title: scheduler API
-    description: scheduler API documentation
+    title: Scheduler API
+    description: Scheduler API documentation
     version: 0.0.1
     terms-of-service-url:
     contact-name:
